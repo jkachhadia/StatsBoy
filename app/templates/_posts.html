@@ -20,6 +20,8 @@
               <div class="progress-bar" style="width: {{ ((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}%;"></div>
               <div class="progress-bar progress-bar-danger" style="width:{{100-((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% ;"></div>
             </div>
+            <span class="label label-green">Yes-{{((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% </span>&nbsp
+            <span class="label label-danger">No-{{100-((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% </span>
             {% endif %}
             <div class="pull-right">
               {% if current_user == post.author %}
