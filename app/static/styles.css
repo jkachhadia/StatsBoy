@@ -1,0 +1,14 @@
+ul.posts{
+  list-style-type: none;
+}
+.media{
+  margin-top: 0px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.media:hover {
+    background-color: #f0f0f0;
+
+}
+.pagination{
+  float:right;;
+}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}StatsBoy - EditProfile{% endblock %}
+{% block page_content %}
+<div class="page-header">
+  <h1>
+    Edit Your profile
+  </h1>
+</div>
+{% if current_user.is_authenticated() %}
+{{wtf.quick_form(form)}}
+{% else %}
+<h2>You are not authenticated.</h2>
+{% endif %}
+{% endblock %}

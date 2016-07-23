@@ -1,0 +1,49 @@
+
+<ul class="media-list">
+    {% for post in posts %}
+    <li class="media" style="padding:4px;">
+            <a class="pull-left" href="{{ url_for('.user', username=post.author.username) }}">
+                <img class="img-rounded profile-thumbnail media-object" src="{{ post.author.gravatar(size=40) }}">
+            </a>
+
+
+          <div class="media-body">
+
+            <div class="media-heading"><a href="{{ url_for('.user', username=post.author.username) }}">{{ post.author.username }}</a><div class="pull-right">{{ moment(post.timestamp).fromNow() }}</div></div>
+              {% if post.body_html %}
+            {{ post.body_html | safe }}
+            {% else %}
+            {{ post.body }}
+            {% endif %}
+            {% if current_user.has_answered(post)==True %}
+            <div class="progress">
+              <div class="progress-bar" style="width: {{ ((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}%;"></div>
+              <div class="progress-bar progress-bar-danger" style="width:{{100-((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% ;"></div>
+            </div>
+            {% endif %}
+            <div class="pull-right">
+              {% if current_user == post.author %}
+              <a href="{{url_for('.edit',id=post.id)}}"><span class="label label-default">Edit</span></a>
+              {% elif current_user.is_administrator() %}
+              <a href="{{url_for('.edit',id=post.id)}}"><span class="label label-default">Edit[ADMIN]</span></a>
+              {% endif %}
+
+              <a href="{{url_for('.post',id=post.id)}}"><span class="label label-default">Permalink</span></a>
+              <a href="{{ url_for('.post',id=post.id)}}#comments"><span class="label label-primary">{{ post.comments.count()}} Comments </span></a>
+              {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+              <a href="{{ url_for('.moderate')}}"> <span class="label label-default">Moderate Comments</span></a>
+              {% endif %}
+            </div>
+            <div class="pull-left">
+              {% if current_user.has_answered(post)==False %}
+              <a class="btn btn-primary btn-wide" href="{{url_for('.answer_yes',id=post.id)}}">Yes</a>
+              <a class="btn btn-danger btn-wide" href="{{url_for('.answer_no',id=post.id)}}">No</a>
+              {% endif %}
+            </div>
+
+          </div>
+
+
+    </li>
+    {% endfor %}
+</ul>

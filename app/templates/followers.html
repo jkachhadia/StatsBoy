@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+{% block title %}StatsBoy{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ title }} {{ user.username }}</h1>
+</div>
+<ul class="media-list">
+    {% for follow in follows %}
+    {% if follow.user != user %}
+    <li class='media'>
+
+    <a  class="pull-left" href="{{ url_for('.user', username = follow.user.username) }}">
+                <img class="img-rounded" src="{{ follow.user.gravatar(size=32) }}">
+
+            </a>
+    <div class="media-body">
+        <a  class="media-heading" href="{{ url_for('.user', username = follow.user.username) }}">
+          {{ follow.user.username }}
+        </a>
+
+        <div class="pull-right">{{ moment(follow.timestamp).format('L') }}</div>
+      </li>
+    {% endif %}
+    {% endfor %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, endpoint, username = user.username) }}
+</div>
+{% endblock %}
+{% block scripts %}
+{{super()}}
+{{pagedown.include_pagedown()}}
+{% endblock %}
