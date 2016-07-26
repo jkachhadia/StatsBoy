@@ -14,7 +14,6 @@
   {% endif %}
 </h1>
 {% if current_user.is_authenticated() and ((a[0]>1440) or (not current_user.mood)) %}
-{{a[0]}}
 {{wtf.quick_form(form1)}}
 {% endif %}
 </div>

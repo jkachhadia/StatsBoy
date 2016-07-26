@@ -1,51 +1,58 @@
 
-<ul class="media-list">
+
     {% for post in posts %}
-    <li class="media" style="padding:4px;">
-            <a class="pull-left" href="{{ url_for('.user', username=post.author.username) }}">
-                <img class="img-rounded profile-thumbnail media-object" src="{{ post.author.gravatar(size=40) }}">
-            </a>
 
 
-          <div class="media-body">
 
-            <div class="media-heading"><a href="{{ url_for('.user', username=post.author.username) }}">{{ post.author.username }}</a><div class="pull-right">{{ moment(post.timestamp).fromNow() }}</div></div>
-              {% if post.body_html %}
-            {{ post.body_html | safe }}
-            {% else %}
-            {{ post.body }}
-            {% endif %}
-            {% if current_user.has_answered(post)==True %}
-            <div class="progress">
-              <div class="progress-bar" style="width: {{ ((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}%;"></div>
-              <div class="progress-bar progress-bar-danger" style="width:{{100-((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% ;"></div>
-            </div>
-            <span class="label label-green">Yes-{{((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% </span>&nbsp
-            <span class="label label-danger">No-{{100-((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% </span>
-            {% endif %}
-            <div class="pull-right">
-              {% if current_user == post.author %}
-              <a href="{{url_for('.edit',id=post.id)}}"><span class="label label-default">Edit</span></a>
-              {% elif current_user.is_administrator() %}
-              <a href="{{url_for('.edit',id=post.id)}}"><span class="label label-default">Edit[ADMIN]</span></a>
-              {% endif %}
+            <div class="mdl-cell mdl-cell--12-col card-lesson mdl-card mdl-color--white mdl-shadow--2dp">
+  <div class="mdl-card__title">
+    <img class="img-rounded profile-thumbnail media-object" src="{{ post.author.gravatar(size=40) }}">&nbsp
+    <h2 class="mdl-card__title-text"><a href="{{ url_for('.user', username=post.author.username) }}">{{ post.author.username }}</a></h2>
+  </div>
+  <div class="mdl-card__supporting-text">
+    {% if post.body_html %}
+  {{ post.body_html | safe }}
+  {% else %}
+  {{ post.body }}
+  {% endif %}
+  {% if current_user.has_answered(post)==True %}
+  <div class="progress">
+    <div class="progress-bar progress-bar-primary" style="width: {{ ((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}%;"></div>
+    <div class="progress-bar progress-bar-danger" style="width:{{100-((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% ;"></div>
+  </div>
+  <span class="label label-green">Yes-{{((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% </span>&nbsp
+  <span class="label label-danger">No-{{100-((post.answers.filter_by(opinion=True).count())/(post.answers.count())*100)}}% </span>
+  {% endif %}
+</div>
+  <div class="mdl-card__actions mdl-card--border">
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--6-col">
+    {% if current_user.has_answered(post)==False %}
+    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--teal-green" href="{{url_for('.answer_yes',id=post.id)}}">Yes</a>
+    <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--red" href="{{url_for('.answer_no',id=post.id)}}">No</a>
+    {% endif %}
+  </div>
+  <div class="mdl-cell mdl-cell--6-col text-right">
 
-              <a href="{{url_for('.post',id=post.id)}}"><span class="label label-default">Permalink</span></a>
-              <a href="{{ url_for('.post',id=post.id)}}#comments"><span class="label label-primary">{{ post.comments.count()}} Comments </span></a>
-              {% if current_user.can(Permission.MODERATE_COMMENTS) %}
-              <a href="{{ url_for('.moderate')}}"> <span class="label label-default">Moderate Comments</span></a>
-              {% endif %}
-            </div>
-            <div class="pull-left">
-              {% if current_user.has_answered(post)==False %}
-              <a class="btn btn-primary btn-wide" href="{{url_for('.answer_yes',id=post.id)}}">Yes</a>
-              <a class="btn btn-danger btn-wide" href="{{url_for('.answer_no',id=post.id)}}">No</a>
-              {% endif %}
-            </div>
+    {% if current_user == post.author %}
+    <a href="{{url_for('.edit',id=post.id)}}" class="material-icons mdl-badge mdl-badge--overlap">edit</a>
+    {% elif current_user.is_administrator() %}
+    <a href="{{url_for('.edit',id=post.id)}}" class="material-icons mdl-badge mdl-badge--overlap">border color</a>
+    {% endif %}
 
-          </div>
+    <a href="{{url_for('.post',id=post.id)}}" class="material-icons mdl-badge mdl-badge--overlap">link</a>
+    <a href="{{ url_for('.post',id=post.id)}}#comments" class=" material-icons mdl-badge mdl-badge--overlap" data-badge="{{ post.comments.count()}}">chat</a>
+    {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+    <a href="{{ url_for('.moderate')}}" class="material-icons mdl-badge mdl-badge--overlap">mode comment</a>
+    {% endif %}
+  </div>
+  </div>
+  <div class="mdl-card__menu">
+   {{ moment(post.timestamp).fromNow()}}
+ </div>
+</div>
+</div>
 
 
-    </li>
+
     {% endfor %}
-</ul>

@@ -25,10 +25,10 @@ def index():
     show_followed=False
     if current_user.is_authenticated():
         show_followed=bool(request.cookies.get('show_followed',''))
-    if current_user.can(Permission.WRITE_ARTICLES):
+    if current_user.can(Permission.WRITE_ARTICLES) and (current_user.mood):
         a=divmod((datetime.utcnow()-current_user.mood_changed).days* 86400+ (datetime.utcnow()-current_user.mood_changed).seconds , 60)
     else:
-        a=False
+        a=(0,1)
     if show_followed:
         query=current_user.followed_posts
     else:
