@@ -74,6 +74,8 @@ class User(db.Model, UserMixin):
     followers=db.relationship('Follow',foreign_keys=[Follow.followed_id],backref=db.backref('followed',lazy='joined'),lazy='dynamic',cascade='all, delete-orphan')
     comments=db.relationship('Comment',backref='author',lazy='dynamic')
     answers=db.relationship('Answer',backref='advisor',lazy='dynamic')
+    mood=db.Column(db.String(64))
+    mood_changed=db.Column(db.DateTime())
     def to_json(self):
         json_user={
         'url':url_for('api.get_post',id=self.id,_external=True),
@@ -92,6 +94,10 @@ class User(db.Model, UserMixin):
 
     @staticmethod
     def add_self_follows():
+        admin=User.query.filter_by(role_id=2)
+        self.follow(admin)
+        db.session.add(self)
+        db.session.commit()
         for user in User.query.all():
             if not user.is_following(user):
                 user.follow(user)

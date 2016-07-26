@@ -25,8 +25,15 @@
     Member since {{ moment(user.member_since).format('L')}}.
     Last seen {{moment(user.last_seen).fromNow()}}.
   </p>
+  {% if user.mood %}
+  <p>
+    Mood:&nbsp<span class="label label-primary">{{user.mood}}</span>
+    Poles:&nbsp<span class="label label-primary">{{user.posts.count()}}</span>
+    Answers:&nbsp<span class="label label-primary">{{user.answers.count()}}</span>
+  </p>
+  {%endif%}
   {% if user == current_user %}
-  <a class="btn btn-default" href="{{ url_for('.edit_profile')}}">
+  <a class="btn btn-primary" href="{{ url_for('.edit_profile')}}">
     Edit profile
   </a>
   {% endif %}
@@ -42,8 +49,13 @@
   <a href="{{ url_for('.unfollow',username=user.username)}}" class="btn btn-primary">Unfollow</a>
   {% endif %}
   {% endif %}
+  {% if current_user.is_administrator() %}
   <a href="{{url_for('.followers',username=user.username)}}">Followers: <span class="badge">{{ user.followers.count()-1}}</span></a>
   <a href="{{ url_for('.followed_by',username=user.username)}}">Following: <span class="badge">{{user.followed.count()-1}}</span></a>
+  {% else %}
+  <a href="{{url_for('.followers',username=user.username)}}">Followers: <span class="badge">{{ user.followers.count()-1}}</span></a>
+  <a href="{{ url_for('.followed_by',username=user.username)}}">Following: <span class="badge">{{user.followed.count()-2}}</span></a>
+  {% endif %}
   {% if current_user.is_authenticated() and user!= current_user and user.is_following(current_user) %}
   <span class="label label-default">Follows you</span>
   {% endif %}

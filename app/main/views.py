@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import render_template, session, redirect,request, url_for,current_app,flash,make_response
 from . import main
-from .forms import EditProfileForm,EditProfileAdminForm,PostForm,CommentForm
+from .forms import EditProfileForm,EditProfileAdminForm,PostForm,CommentForm,MoodForm
 from .. import db
 from ..decorators import admin_required, permission_required
 from ..models import User,Role,Permission,Post,Comment,Answer
@@ -9,6 +9,13 @@ from flask.ext.login import login_required,current_user
 
 @main.route('/',methods=['GET','POST'])
 def index():
+    form1=MoodForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and form1.validate_on_submit():
+        current_user.mood=form1.mood.data
+        current_user.mood_changed=datetime.utcnow()
+        db.session.add(current_user)
+        flash('Your mood has been set to '+current_user.mood)
+        return redirect(url_for('.index'))
     form=PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         post=Post(body=form.body.data,author=current_user._get_current_object())
@@ -18,13 +25,17 @@ def index():
     show_followed=False
     if current_user.is_authenticated():
         show_followed=bool(request.cookies.get('show_followed',''))
+    if current_user.can(Permission.WRITE_ARTICLES):
+        a=divmod((datetime.utcnow()-current_user.mood_changed).days* 86400+ (datetime.utcnow()-current_user.mood_changed).seconds , 60)
+    else:
+        a=False
     if show_followed:
         query=current_user.followed_posts
     else:
         query=Post.query
     pagination=query.order_by(Post.timestamp.desc()).paginate(page,per_page=current_app.config['BLOGPOLE_POSTS_PER_PAGE'],error_out=False)
     posts=pagination.items
-    return render_template('index.html',form=form,posts=posts,pagination=pagination)
+    return render_template('index.html',form=form,posts=posts,pagination=pagination,form1=form1,a=a)
 
 @main.route('/all')
 @login_required

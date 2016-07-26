@@ -42,3 +42,7 @@ class PostForm(Form):
 class CommentForm(Form):
     body=StringField('',validators=[Required()])
     submit=SubmitField('Submit')
+
+class MoodForm(Form):
+    mood=StringField("How's your mood?",validators=[Required()])
+    submit=SubmitField('shoot your mood')
